@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+@font-face {
+  font-family:"SF Compact Display M";
+  src: url("../fonts/sf-compact-display-medium-5864711817c30.otf");
+}
+
+@font-face {
+  font-family:"SF Compact Display T";
+  src: url("../fonts/sf-compact-display-thin-58646eb43a785.otf");
+}
