@@ -7,23 +7,31 @@ import { AppIcons } from '@/app/assets'
 
 const LeftSidebar = () => {
   return (
-    <div className='ml-[88px]'>
+		<div className='flex flex-col justify-between ml-[88px] fixed h-screen'>
+			<div className='my-3 mx-2'>
+				<Image
+					src={AppIcons.logo}
+					alt='logo'
+					width={30}
+					height={30}
+					style={{ backgroundColor: '#fffff' }}
+				/>
+			</div>
 
-      <div className='my-3 mx-2'>
-        <Image src={AppIcons.logo} alt="logo" width={30} height={30} style={{backgroundColor:'#fffff'}} />
-      </div>
-      
-       <LeftMenu />
+			<LeftMenu />
 
-      <div className='m-4'>
-        <Link href='/home' className='py-[15px] px-[93px] text-center font-sfcompactM text-h4 bg-primary_blue rounded-full text-white'> Tweet </Link>
-      </div>
+			<div className='m-4'>
+				<Link
+					href='/profile'
+					className='py-[15px] px-[93px] text-center font-sfcompactM text-h4 bg-primary_blue rounded-full text-white'>
+					{' '}
+					Tweet{' '}
+				</Link>
+			</div>
 
-      <MenuProfile />
-
-
-    </div>
-  )
+			<MenuProfile />
+		</div>
+	);
 }
 
 export default LeftSidebar;

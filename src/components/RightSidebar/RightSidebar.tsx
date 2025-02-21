@@ -8,7 +8,7 @@ const RightSidebar = () => {
   return (
     <div className="mr-[97px] ml-[30px]">
      
-      <div className="my-[10px]  rounded-full bg-dark7 flex gap-2">
+      <div className="my-[10px] rounded-full bg-dark7 flex gap-2">
 
         <div className="my-[10px] mx-[16px]">
           <Image
