@@ -1,14 +1,40 @@
-import React from 'react'
-import Image from 'next/image'
+'use client';
+import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { middata } from '../../json/MiddleTweet.jsx';
+import { api } from '../../app/api/getServices.jsx';
+import { AppIcons } from '../../app/assets/index';
+
 
 const MidLayer = () => {
 	const data = middata;
-	return data.map((curele, index) => (
+	const [isLoading, setLoading] = useState(true);
+	const [usedata, setusedata] = useState([]);
+	const [user, setuser] = useState([]);
+
+	useEffect(() => {
+		const getdata = async () => {
+			try {
+				const response = await api.get(`/posts`);
+				setusedata(response.data);
+				console.log(response.data);
+			} catch (err) {
+				console.log('error fetching error', err);
+				// toast.error(err.message ?? 'Something Went Wrong!');
+			} finally {
+				setLoading(false);
+			}
+		};
+
+		getdata();
+	}, []);
+
+	if (isLoading) return <p>Loading....</p>;
+	return usedata.slice(0, 10).map((curele, index) => (
 		<div className='flex mt-3 border border-dark7' key={index}>
 			<div className='w-[10%]'>
 				<Image
-					src={curele.profile_image}
+					src={AppIcons.tweet_p2}
 					width={49}
 					height={49}
 					alt='User1'
@@ -18,27 +44,25 @@ const MidLayer = () => {
 
 			<div className='flex flex-col w-[90%]'>
 				<div className='flex gap-2'>
-					<p className='font-sfcompactM font-bold text-h4'>{curele.name}</p>
+					{/* <p className='font-sfcompactM font-bold text-h4'>{curele.name}</p>
 					<p className='font-sfcompactM font-medium text-h4 text-dark5'>
 						{curele.username}
 					</p>
 					<p className='font-sfcompactM font-medium text-h4 text-dark5'>
 						{curele.timing}
-					</p>
+					</p> */}
 				</div>
 
-				<p className='font-sfcompactM font-medium text-h4'>
-					Tom is in Big Hurry!
-				</p>
+				{/* <p className='font-sfcompactM font-medium text-h4'>{curele.title}</p> */}
 				<Image
-					src={curele.featured_image}
+					src={AppIcons.post1}
 					width={509}
 					height={247}
 					alt='User1'
 					className='my-2'
 				/>
 
-				{
+				{/* {
 					<div className='flex justify-around my-1'>
 						<div className='flex gap-2 items-center'>
 							{curele.comment && (
@@ -96,7 +120,7 @@ const MidLayer = () => {
 							</p>
 						</div>
 					</div>
-				}
+				} */}
 				<p className='text-h6 font-medium font-sfcompactT text-primary_blue'>
 					{' '}
 					Show this tread{' '}
@@ -106,4 +130,4 @@ const MidLayer = () => {
 	));
 };
 
-export default MidLayer
+export default MidLayer;

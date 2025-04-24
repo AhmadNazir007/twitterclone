@@ -4,7 +4,7 @@ import { AppIcons } from '@/app/assets'
 import {profile} from '../../json/ProfileMenu.jsx'
 
 const MenuProfile = () => {
-  return (
+	return (
 		<>
 			<div className=''>
 				<div className='flex items-center gap-3'>
@@ -20,7 +20,6 @@ const MenuProfile = () => {
 							{profile.username}{' '}
 						</p>
 					</div>
-
 					<Image
 						src={AppIcons.ellipses_default}
 						alt='logo'
@@ -31,6 +30,6 @@ const MenuProfile = () => {
 			</div>
 		</>
 	);
-}
+};
 
 export default MenuProfile
