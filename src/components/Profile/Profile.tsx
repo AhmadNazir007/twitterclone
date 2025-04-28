@@ -2,7 +2,6 @@ import React from 'react';
 import Image from 'next/image';
 import { AppIcons } from '@/app/assets';
 import Link from 'next/link';
-import MidLayer from '../Middlesec/MidLayer';
 
 const Profile = () => {
 	return (
@@ -116,7 +115,6 @@ const Profile = () => {
 				</div>
 			</div>
 
-			<MidLayer />
 		</>
 	);
 };

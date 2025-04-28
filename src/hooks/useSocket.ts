@@ -10,10 +10,15 @@ export const useSocket = () => {
       console.log('Connected to WebSocket');
     });
 
-    socket.on('notification', (data:any) => {
-      console.log("Notification Alert: ",data);  
-      alert(`🔔 ${data.message}`);
-    });
+    type NotificationData = {
+			message: string;
+			[key: string]: unknown;
+		};
+
+		socket.on('notification', (data: NotificationData) => {
+			console.log('Notification Alert:', data);
+			alert(`🔔 ${data.message}`);
+		});
 
     return () => {
       socket.disconnect();

@@ -5,11 +5,7 @@ import Image from 'next/image';
 import { toast } from 'react-toastify';
 import { mid } from '../../json/MidSec';
 import { AppIcons } from '@/app/assets';
-import {
-	HeartIcon,
-	ChatBubbleLeftIcon,
-	HeartIcon as HeartIconSolid,
-} from '@heroicons/react/24/outline';
+import { HeartIcon, ChatBubbleLeftIcon } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartFilled } from '@heroicons/react/24/solid';
 
 interface Post {
@@ -141,7 +137,6 @@ const MiddleSec = () => {
 				throw new Error(errorData.message || 'Failed to create post');
 			}
 
-			const data = await response.json();
 			toast.success('Post created successfully!');
 			setPostData({ title: '', content: '' });
 			fetchPosts(); // Refresh the posts list

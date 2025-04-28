@@ -41,31 +41,40 @@ const RegisterForm = () => {
     setIsLoading(true);
     
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          password: formData.password,
-          role: formData.role,
-          adminToken: formData.role === 'admin' ? formData.adminToken : undefined,
-        }),
-      });
+			const response = await fetch(
+				`${process.env.NEXT_PUBLIC_API_URL}/auth/register`,
+				{
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({
+						name: formData.name,
+						email: formData.email,
+						password: formData.password,
+						role: formData.role,
+						adminToken:
+							formData.role === 'admin' ? formData.adminToken : undefined,
+					}),
+				},
+			);
 
-      const data = await response.json();
+			const data = await response.json();
 
-      if (!response.ok) {
-        throw new Error(data.message || 'Registration failed');
-      }
+			if (!response.ok) {
+				throw new Error(data.message || 'Registration failed');
+			}
 
-      toast.success('Registration successful! Redirecting to login...');
-      setTimeout(() => router.push('/loginform'), 3000);
-    } catch (error) {
-      // toast.error(error.message);
-    } finally {
-      setIsLoading(false);
-    }
+			toast.success('Registration successful! Redirecting to login...');
+			setTimeout(() => router.push('/loginform'), 3000);
+		} catch (error: unknown) {
+			if (error instanceof Error) {
+				toast.error(error.message || 'Invalid credentials');
+			} else {
+				toast.error('Invalid credentials');
+			}
+		} finally {
+			setIsLoading(false);
+		}
+    
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
