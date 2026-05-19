@@ -1,69 +1,35 @@
-import React from "react";
-import Image from "next/image";
-import { AppIcons } from "@/app/assets";
-import RightNews from "./RightNews";
-import Rightdown from "./Rightdown";
+import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import RightNews from './RightNews';
+import Rightdown from './Rightdown';
 
 const RightSidebar = () => {
   return (
-    <div className="mr-[97px] ml-[30px]">
-     
-      <div className="my-[10px] rounded-full bg-dark7 flex gap-2">
-
-        <div className="my-[10px] mx-[16px]">
-          <Image
-            src={AppIcons.default_search}
-            alt="logo"
-            width={19}
-            height={19}
+    <aside className="sticky top-0 hidden h-screen overflow-y-auto py-4 xl:block">
+      <div className="space-y-4">
+        <div className="flex h-12 items-center gap-3 rounded-full border border-slate-200 bg-white px-4 shadow-sm">
+          <MagnifyingGlassIcon className="h-5 w-5 text-slate-400" />
+          <input
+            placeholder="Search Pulse"
+            className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-slate-400"
           />
         </div>
 
-        <input
-          placeholder="Search"
-          className="my-[10px] bg-dark7 outline-none"
-        />
+        <section className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
+          <h2 className="text-lg font-black text-slate-950">What&apos;s happening</h2>
+          <RightNews />
+          <button className="mt-3 text-sm font-bold text-teal-700 hover:text-teal-800">Show more</button>
+        </section>
+
+        <section className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
+          <h2 className="text-lg font-black text-slate-950">Who to follow</h2>
+          <Rightdown />
+        </section>
+
+        <p className="px-2 text-xs leading-5 text-slate-400">
+          Terms ? Privacy ? Cookies ? Ads info ? ? 2026 Pulse
+        </p>
       </div>
-
-      <div className="bg-dark7 rounded-lg">
-        <div className="font-sfcompactM font-bold text-h1 px-4 py-3">
-          Whats happening?
-        </div>
-        <hr></hr>
-
-        <RightNews />    
-        
-        <div className="font-sfcompactM font-medium text-h4 px-4 py-3 text-primary_blue">
-          Show More
-        </div>
-
-
-      </div>
-
-      <div className="bg-dark7 rounded-lg mt-4">
-        <div className="font-sfcompactM font-bold text-h1 px-4 py-3">
-          Who to Follow
-        </div>
-        <hr></hr>
-
-          <Rightdown/>
-
-        <hr></hr>
-
-        <hr></hr>
-        <div className="font-sfcompactM font-medium text-h4 px-4 py-3 text-primary_blue">
-          Show More
-        </div>
-
-      </div>
-    
-      <div className="mt-4">
-        <p className="text-h6 font-sfcompactM font-medium text-dark5 ">Terms of Service Privacy Policy Cookie Policy <br></br>
-        Ads info More © 2021 Twitter, Inc.</p>
-      </div>
-      
-
-    </div>
+    </aside>
   );
 };
 

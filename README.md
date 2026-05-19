@@ -1,36 +1,78 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Twitter Clone Frontend
 
-## Getting Started
+This is a Next.js 15 frontend for a Twitter/X-style app. It includes authentication screens, a protected home feed, post CRUD actions, likes, comments, a profile view, admin category creation, and Socket.IO notification handling.
 
-First, run the development server:
+## Setup
+
+1. Install dependencies:
+
+```bash
+npm install
+```
+
+2. Create `.env.local` from the example:
+
+```bash
+cp .env.example .env.local
+```
+
+3. Set the backend URL:
+
+```bash
+NEXT_PUBLIC_API_URL=http://localhost:4000
+```
+
+4. Start the dev server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Expected Backend Endpoints
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+The frontend expects these API routes to exist on `NEXT_PUBLIC_API_URL`:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `POST /auth/register`
+- `POST /auth/login`
+- `POST /auth/logout`
+- `GET /posts`
+- `POST /posts`
+- `PUT /posts/:id`
+- `DELETE /posts/:id`
+- `POST /posts/:id/like`
+- `POST /posts/:id/comments`
+- `POST /category/create`
 
-## Learn More
+The login response should include:
 
-To learn more about Next.js, take a look at the following resources:
+```json
+{
+  "access_token": "jwt-token",
+  "user": {
+    "id": "user-id",
+    "username": "username",
+    "role": "user"
+  }
+}
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Current Coverage
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Implemented in this frontend:
 
-## Deploy on Vercel
+- Auth forms with validation.
+- Redux auth state with localStorage hydration.
+- Protected app shell with public login/register routes.
+- Post create, read, update, delete actions.
+- Like toggling and comment creation.
+- Basic owner-only edit/delete controls.
+- Static right sidebar content and basic profile display.
+- Admin category creation form.
+- Socket.IO notification toast handling.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Still backend-dependent:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Real user/profile editing.
+- Real search, follow, messages, bookmarks, notifications pages, and retweets.
+- Server-side authorization for post/category actions.
+- Production-grade media upload support.

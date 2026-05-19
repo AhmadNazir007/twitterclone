@@ -1,10 +1,13 @@
 // hooks/useSocket.ts
 import { useEffect } from 'react';
 import  io  from 'socket.io-client';
+import { toast } from 'react-toastify';
 
 export const useSocket = () => {
   useEffect(() => {
-    const socket = io(process.env.NEXT_PUBLIC_API_URL!); // backend URL
+    if (!process.env.NEXT_PUBLIC_API_URL) return;
+
+    const socket = io(process.env.NEXT_PUBLIC_API_URL); // backend URL
 
     socket.on('connect', () => {
       console.log('Connected to WebSocket');
@@ -17,7 +20,7 @@ export const useSocket = () => {
 
 		socket.on('notification', (data: NotificationData) => {
 			console.log('Notification Alert:', data);
-			alert(`🔔 ${data.message}`);
+			toast.info(data.message);
 		});
 
     return () => {

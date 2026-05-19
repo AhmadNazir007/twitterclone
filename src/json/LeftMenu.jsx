@@ -1,44 +1,12 @@
-import {AppIcons} from '../app/assets/index'
+import { AppIcons } from '../app/assets/index';
 
 export const menu = [
-    {
-    "id":1,
-    "image": AppIcons['home_default'],
-    "menu_name":"Home"
-},
-{
-    "id":2,
-    "image": AppIcons['explore_default'],
-    "menu_name":"Explore"
-},
-{
-    "id":3,
-    "image": AppIcons['notifications_default'],
-    "menu_name":"Notifications"
-},
-{
-    "id":4,
-    "image": AppIcons['messages_default'],
-    "menu_name":"Messages"
-},
-{
-    "id":5,
-    "image": AppIcons['bookmarks_default'],
-    "menu_name":"Bookmarks"
-},
-{
-    "id":6,
-    "image": AppIcons['lists_default'],
-    "menu_name":"Lists"
-},
-{
-    "id":7,
-    "image": AppIcons['profile'],
-    "menu_name":"Profile"
-},
-{
-    "id":8,
-    "image": AppIcons['more'],
-    "menu_name":"More"
-},
-]
+  { id: 1, image: AppIcons.home_default, menu_name: 'Home', href: '/' },
+  { id: 2, image: AppIcons.explore_default, menu_name: 'Explore', href: '/explore' },
+  { id: 3, image: AppIcons.notifications_default, menu_name: 'Notifications', href: '/notifications' },
+  { id: 4, image: AppIcons.messages_default, menu_name: 'Messages', href: '/messages' },
+  { id: 5, image: AppIcons.bookmarks_default, menu_name: 'Bookmarks', href: '/bookmarks' },
+  { id: 6, image: AppIcons.lists_default, menu_name: 'Lists', href: '/lists' },
+  { id: 7, image: AppIcons.profile, menu_name: 'Profile', href: '/profile' },
+  { id: 8, image: AppIcons.more, menu_name: 'More', href: '/more' },
+];

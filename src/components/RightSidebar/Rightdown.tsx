@@ -1,4 +1,3 @@
-import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { profile } from '../../json/ProfileRight.jsx';
@@ -6,35 +5,21 @@ import { IRightDown } from '@/app/types/rightdown';
 
 const Rightdown = () => {
   return (
-		<div>
-			{profile?.map((curele: IRightDown, index: number) => (
-				<div key={index} className='p-2'>
-					<div className='flex justify-between'>
-						<div className='w-[20%]'>
-							<Image src={curele.image} alt='logo' width={49} height={49} />
-						</div>
-
-						<div className='flex flex-col w-[50%]'>
-							<span className='font-sfcompactM text-h3 font-bold'>
-								{curele.name}
-							</span>
-							<span className='font-sfcompactM text-h3 font-medium text-dark5'>
-								{curele.username}
-							</span>
-						</div>
-
-						<div className='w-[30%]'>
-							<Link
-								href='/home'
-								className='py-1 px-4 text-center font-sfcompactM text-h4 rounded-full text-primary_blue border-2 border-primary_blue'>
-								Follow
-							</Link>
-						</div>
-					</div>
-				</div>
-			))}
-		</div>
-	);
+    <div className="mt-3 space-y-3">
+      {profile?.map((item: IRightDown) => (
+        <div key={item.id} className="flex items-center gap-3">
+          <Image src={item.image} alt={item.name} width={44} height={44} className="h-11 w-11 rounded-full object-cover" />
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-sm font-black text-slate-950">{item.name}</p>
+            <p className="truncate text-xs text-slate-500">{item.username}</p>
+          </div>
+          <Link href="/profile" className="rounded-full bg-slate-950 px-4 py-2 text-xs font-bold text-white transition hover:bg-slate-800">
+            Follow
+          </Link>
+        </div>
+      ))}
+    </div>
+  );
 };
 
 export default Rightdown;

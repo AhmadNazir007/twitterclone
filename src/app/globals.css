@@ -3,29 +3,39 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f5f7fb;
+  --foreground: #172033;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
 }
 
 body {
+  min-height: 100%;
   color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  background:
+    radial-gradient(circle at top left, rgba(45, 212, 191, 0.16), transparent 32rem),
+    linear-gradient(180deg, #f7faff 0%, #eef3f8 100%);
+  font-family: "SF Compact Display M", Arial, Helvetica, sans-serif;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
 }
 
 @font-face {
-  font-family:"SF Compact Display M";
+  font-family: "SF Compact Display M";
   src: url("../fonts/sf-compact-display-medium-5864711817c30.otf");
 }
 
 @font-face {
-  font-family:"SF Compact Display T";
+  font-family: "SF Compact Display T";
   src: url("../fonts/sf-compact-display-thin-58646eb43a785.otf");
 }
