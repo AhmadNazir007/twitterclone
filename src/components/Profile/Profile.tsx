@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
 import { useSelector } from 'react-redux';
 import {
@@ -9,17 +10,48 @@ import {
 } from '@heroicons/react/24/outline';
 import { AppIcons } from '@/app/assets';
 import type { RootState } from '../../../store';
+import FollowButton from '../FollowButton';
+import { getUser, type PublicUser, type UserId } from '../../services/user.service';
 
-const Profile = () => {
-  const user = useSelector((state: RootState) => state.auth.user);
-  const displayName = user?.name || user?.username || 'Your profile';
-  const username = user?.username ? `@${user.username}` : user?.email || '@username';
+const getId = (user?: { id?: UserId; _id?: string } | null) =>
+  user?.id !== undefined ? String(user.id) : user?._id || '';
+
+const Profile = ({ profileUserId }: { profileUserId?: UserId }) => {
+  const currentUser = useSelector((state: RootState) => state.auth.user);
+  const [profileUser, setProfileUser] = useState<PublicUser | null>(null);
+  const [isLoadingUser, setIsLoadingUser] = useState(false);
+
+  const isOwnProfile = !profileUserId || String(profileUserId) === getId(currentUser);
+
+  useEffect(() => {
+    if (!profileUserId || isOwnProfile) {
+      setProfileUser(null);
+      return;
+    }
+
+    setIsLoadingUser(true);
+    getUser(profileUserId)
+      .then(setProfileUser)
+      .catch(() => setProfileUser(null))
+      .finally(() => setIsLoadingUser(false));
+  }, [isOwnProfile, profileUserId]);
+
+  const displayUser = isOwnProfile ? currentUser : profileUser;
+  const displayName = displayUser?.name || displayUser?.username || displayUser?.email || 'Pulse user';
+  const username = displayUser?.username ? `@${displayUser.username}` : displayUser?.email || '@username';
+  const followersCount = displayUser?.followersCount ?? 72;
+  const followingCount = displayUser?.followingCount ?? 569;
+
+  const headerTitle = useMemo(() => {
+    if (isLoadingUser) return 'Loading profile';
+    return displayName;
+  }, [displayName, isLoadingUser]);
 
   return (
     <div className="min-h-screen bg-white">
       <header className="sticky top-0 z-20 border-b border-slate-200/80 bg-white/90 px-4 py-4 backdrop-blur sm:px-6">
         <p className="text-xs font-semibold uppercase tracking-[0.22em] text-teal-600">Profile</p>
-        <h1 className="text-2xl font-black text-slate-950">{displayName}</h1>
+        <h1 className="text-2xl font-black text-slate-950">{headerTitle}</h1>
       </header>
 
       <section>
@@ -28,6 +60,7 @@ const Profile = () => {
             src={AppIcons.profile_background}
             alt="Profile cover"
             fill
+            sizes="(max-width: 768px) 100vw, 640px"
             className="object-cover opacity-90"
             priority
           />
@@ -43,10 +76,16 @@ const Profile = () => {
               height={128}
               className="-mt-16 h-28 w-28 rounded-full border-4 border-white object-cover shadow-lg sm:h-32 sm:w-32"
             />
-            <button className="mb-3 flex h-10 items-center gap-2 rounded-full border border-slate-300 px-4 text-sm font-bold text-slate-800 transition hover:border-teal-300 hover:bg-teal-50 hover:text-teal-700">
-              <PencilSquareIcon className="h-5 w-5" />
-              Edit
-            </button>
+            <div className="mb-3 flex items-center gap-2">
+              {isOwnProfile ? (
+                <button className="flex h-10 items-center gap-2 rounded-full border border-slate-300 px-4 text-sm font-bold text-slate-800 transition hover:border-teal-300 hover:bg-teal-50 hover:text-teal-700">
+                  <PencilSquareIcon className="h-5 w-5" />
+                  Edit
+                </button>
+              ) : (
+                <FollowButton targetUserId={profileUserId} />
+              )}
+            </div>
           </div>
 
           <div className="mt-4">
@@ -66,8 +105,8 @@ const Profile = () => {
               </span>
             </div>
             <div className="mt-5 flex gap-5 text-sm">
-              <span><b className="text-slate-950">569</b> <span className="text-slate-500">Following</span></span>
-              <span><b className="text-slate-950">72</b> <span className="text-slate-500">Followers</span></span>
+              <span><b className="text-slate-950">{followingCount}</b> <span className="text-slate-500">Following</span></span>
+              <span><b className="text-slate-950">{followersCount}</b> <span className="text-slate-500">Followers</span></span>
             </div>
           </div>
         </div>
@@ -86,7 +125,7 @@ const Profile = () => {
         <div className="px-6 py-14 text-center">
           <h3 className="text-lg font-black text-slate-950">Profile timeline is ready</h3>
           <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-slate-500">
-            Connect a user-specific posts endpoint to show this user?s posts here.
+            Connect a user-specific posts endpoint to show this user&apos;s posts here.
           </p>
         </div>
       </section>
@@ -95,4 +134,5 @@ const Profile = () => {
 };
 
 export default Profile;
+
 

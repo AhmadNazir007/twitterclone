@@ -6,6 +6,8 @@ interface User {
     name?: string;
     username: string;
     email?: string;
+    followersCount?: number;
+    followingCount?: number;
     role: string; // or whatever roles you use
   }
   
@@ -41,3 +43,4 @@ interface User {
 
 export const { loginSuccess, logout } = authSlice.actions;
 export default authSlice.reducer;
+

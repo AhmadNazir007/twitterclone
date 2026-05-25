@@ -1,9 +1,7 @@
 // src/services/posts.ts
-import axios from 'axios';
+import api from './api';
 
-const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
-});
+// No need to create a new axios instance here; the shared api includes base URL and auth headers.
 
 export const getPost = async (postId: string) => {
   const response = await api.get(`/posts/${postId}`);

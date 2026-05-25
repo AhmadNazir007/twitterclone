@@ -179,7 +179,10 @@ const MiddleSec = () => {
         credentials: 'include',
       });
 
-      if (!response.ok) throw new Error('Failed to delete post');
+      if (!response.ok) {
+        const errText = await response.text();
+        throw new Error(errText || 'Failed to delete post');
+      }
 
       toast.success('Post deleted successfully');
       fetchPosts();
@@ -197,17 +200,19 @@ const MiddleSec = () => {
     }
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/posts/${postId}/like`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        credentials: 'include',
-      });
-      const data = await response.json();
-
-      if (!response.ok) throw new Error('Failed to toggle like');
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/posts/${postId}/like`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          credentials: 'include',
+        });
+        if (!response.ok) {
+          const errText = await response.text();
+          throw new Error(errText || 'Failed to toggle like');
+        }
+        const data = await response.json();
 
       setPosts((prevPosts) =>
         prevPosts.map((post) =>
