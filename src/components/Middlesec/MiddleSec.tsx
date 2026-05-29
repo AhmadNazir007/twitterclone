@@ -9,7 +9,9 @@ import {
   HeartIcon,
   PencilSquareIcon,
   PhotoIcon,
+  TagIcon,
   TrashIcon,
+  XMarkIcon,
 } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartFilled } from '@heroicons/react/24/solid';
 import { AppIcons } from '@/app/assets';
@@ -23,11 +25,17 @@ type DisplayUser = {
   email?: string;
 };
 
+interface Category {
+  id: string;
+  name: string;
+}
+
 interface Post {
   id: string;
   title: string;
   content: string;
   createdAt: string;
+  category?: Category | null;
   likes?: {
     id: string;
     user: {
@@ -61,15 +69,18 @@ interface Post {
 
 const MiddleSec = () => {
   const currentUser = useSelector((state: RootState) => state.auth.user);
-  const [postData, setPostData] = useState({ title: '', content: '' });
+  const [postData, setPostData] = useState({ title: '', content: '', categoryId: '' });
   const [isLoading, setIsLoading] = useState(false);
   const [posts, setPosts] = useState<Post[]>([]);
   const [editingPostId, setEditingPostId] = useState<string | null>(null);
-  const [editData, setEditData] = useState({ title: '', content: '' });
+  const [editData, setEditData] = useState({ title: '', content: '', categoryId: '' });
   const [commentInputs, setCommentInputs] = useState<Record<string, string>>({});
   const [expandedComments, setExpandedComments] = useState<Record<string, boolean>>({});
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [activeCategoryId, setActiveCategoryId] = useState<string>('');
 
   useEffect(() => {
+    fetchCategories();
     fetchPosts();
   }, []);
 
@@ -78,9 +89,28 @@ const MiddleSec = () => {
     [currentUser],
   );
 
-  const fetchPosts = async () => {
+  const fetchCategories = async () => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/posts`, {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/category`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!response.ok) return;
+      const data = await response.json();
+      setCategories(data);
+    } catch {
+      // categories optional — fail silently
+    }
+  };
+
+  const fetchPosts = async (categoryId?: string) => {
+    try {
+      const url = categoryId
+        ? `${process.env.NEXT_PUBLIC_API_URL}/posts?category=${categoryId}`
+        : `${process.env.NEXT_PUBLIC_API_URL}/posts`;
+
+      const response = await fetch(url, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -94,6 +124,11 @@ const MiddleSec = () => {
       console.error('Error fetching posts:', error);
       toast.error('Failed to load posts');
     }
+  };
+
+  const handleCategoryFilter = (categoryId: string) => {
+    setActiveCategoryId(categoryId);
+    fetchPosts(categoryId || undefined);
   };
 
   const getUserId = (user?: { id?: string | number; _id?: string } | null) =>
@@ -113,12 +148,12 @@ const MiddleSec = () => {
     );
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setPostData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleEditInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleEditInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setEditData((prev) => ({ ...prev, [name]: value }));
   };
@@ -140,13 +175,19 @@ const MiddleSec = () => {
     setIsLoading(true);
 
     try {
+      const body: Record<string, string> = {
+        title: postData.title,
+        content: postData.content,
+      };
+      if (postData.categoryId) body.categoryId = postData.categoryId;
+
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/posts`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(postData),
+        body: JSON.stringify(body),
         credentials: 'include',
       });
 
@@ -156,8 +197,8 @@ const MiddleSec = () => {
       }
 
       toast.success('Post created successfully');
-      setPostData({ title: '', content: '' });
-      fetchPosts();
+      setPostData({ title: '', content: '', categoryId: '' });
+      fetchPosts(activeCategoryId || undefined);
     } catch (error: unknown) {
       toast.error(error instanceof Error ? error.message : 'An unexpected error occurred');
     } finally {
@@ -185,7 +226,7 @@ const MiddleSec = () => {
       }
 
       toast.success('Post deleted successfully');
-      fetchPosts();
+      fetchPosts(activeCategoryId || undefined);
     } catch (error) {
       console.error('Error deleting post:', error);
       toast.error('Failed to delete post');
@@ -200,19 +241,19 @@ const MiddleSec = () => {
     }
 
     try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/posts/${postId}/like`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          credentials: 'include',
-        });
-        if (!response.ok) {
-          const errText = await response.text();
-          throw new Error(errText || 'Failed to toggle like');
-        }
-        const data = await response.json();
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/posts/${postId}/like`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        credentials: 'include',
+      });
+      if (!response.ok) {
+        const errText = await response.text();
+        throw new Error(errText || 'Failed to toggle like');
+      }
+      const data = await response.json();
 
       setPosts((prevPosts) =>
         prevPosts.map((post) =>
@@ -280,7 +321,11 @@ const MiddleSec = () => {
 
   const startEditing = (post: Post) => {
     setEditingPostId(post.id);
-    setEditData({ title: post.title, content: post.content });
+    setEditData({
+      title: post.title,
+      content: post.content,
+      categoryId: post.category?.id ?? '',
+    });
   };
 
   const handleUpdatePost = async (postId: string) => {
@@ -296,13 +341,19 @@ const MiddleSec = () => {
     }
 
     try {
+      const body: Record<string, string> = {
+        title: editData.title,
+        content: editData.content,
+      };
+      body.categoryId = editData.categoryId;
+
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/posts/${postId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(editData),
+        body: JSON.stringify(body),
         credentials: 'include',
       });
 
@@ -310,7 +361,7 @@ const MiddleSec = () => {
 
       toast.success('Post updated successfully');
       setEditingPostId(null);
-      fetchPosts();
+      fetchPosts(activeCategoryId || undefined);
     } catch (error) {
       console.error('Error updating post:', error);
       toast.error('Failed to update post');
@@ -326,12 +377,41 @@ const MiddleSec = () => {
             <h1 className="text-2xl font-black text-slate-950">Latest pulses</h1>
           </div>
           <button
-            onClick={fetchPosts}
+            onClick={() => fetchPosts(activeCategoryId || undefined)}
             className="rounded-full border border-slate-200 px-4 py-2 text-sm font-bold text-slate-700 transition hover:border-teal-200 hover:bg-teal-50 hover:text-teal-700"
           >
             Refresh
           </button>
         </div>
+
+        {/* Category filter tabs */}
+        {categories.length > 0 && (
+          <div className="mt-3 flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+            <button
+              onClick={() => handleCategoryFilter('')}
+              className={`shrink-0 rounded-full px-4 py-1.5 text-xs font-bold transition ${
+                activeCategoryId === ''
+                  ? 'bg-slate-950 text-white'
+                  : 'border border-slate-200 text-slate-600 hover:border-teal-300 hover:bg-teal-50 hover:text-teal-700'
+              }`}
+            >
+              All
+            </button>
+            {categories.map((cat) => (
+              <button
+                key={cat.id}
+                onClick={() => handleCategoryFilter(cat.id)}
+                className={`shrink-0 rounded-full px-4 py-1.5 text-xs font-bold transition ${
+                  activeCategoryId === cat.id
+                    ? 'bg-teal-600 text-white'
+                    : 'border border-slate-200 text-slate-600 hover:border-teal-300 hover:bg-teal-50 hover:text-teal-700'
+                }`}
+              >
+                {cat.name}
+              </button>
+            ))}
+          </div>
+        )}
       </header>
 
       <section className="border-b border-slate-200 bg-gradient-to-br from-white to-slate-50/80 p-4 sm:p-6">
@@ -356,6 +436,26 @@ const MiddleSec = () => {
               onChange={handleInputChange}
               disabled={isLoading}
             />
+            {/* Category selector */}
+            {categories.length > 0 && (
+              <div className="mt-3 flex items-center gap-2">
+                <TagIcon className="h-4 w-4 shrink-0 text-teal-600" />
+                <select
+                  name="categoryId"
+                  value={postData.categoryId}
+                  onChange={handleInputChange}
+                  disabled={isLoading}
+                  className="flex-1 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 outline-none ring-teal-500/20 transition focus:border-teal-300 focus:ring-4"
+                >
+                  <option value="">No category</option>
+                  {categories.map((cat) => (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
             <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-2 text-teal-600">
                 <PhotoIcon className="h-5 w-5" />
@@ -380,7 +480,20 @@ const MiddleSec = () => {
               <PencilSquareIcon className="h-7 w-7" />
             </div>
             <h2 className="mt-5 text-lg font-black text-slate-950">No posts yet</h2>
-            <p className="mt-2 text-sm text-slate-500">Start the conversation with your first post.</p>
+            <p className="mt-2 text-sm text-slate-500">
+              {activeCategoryId
+                ? 'No posts found in this category.'
+                : 'Start the conversation with your first post.'}
+            </p>
+            {activeCategoryId && (
+              <button
+                onClick={() => handleCategoryFilter('')}
+                className="mt-4 flex items-center gap-1 mx-auto text-sm font-bold text-teal-600 hover:text-teal-700"
+              >
+                <XMarkIcon className="h-4 w-4" />
+                Clear filter
+              </button>
+            )}
           </div>
         ) : (
           posts.map((post) => (
@@ -399,6 +512,25 @@ const MiddleSec = () => {
                     onChange={handleEditInputChange}
                     className="min-h-28 w-full resize-none rounded-xl border border-slate-200 px-4 py-3 outline-none ring-teal-500/20 focus:ring-4"
                   />
+                  {/* Category selector in edit mode */}
+                  {categories.length > 0 && (
+                    <div className="flex items-center gap-2">
+                      <TagIcon className="h-4 w-4 shrink-0 text-teal-600" />
+                      <select
+                        name="categoryId"
+                        value={editData.categoryId}
+                        onChange={handleEditInputChange}
+                        className="flex-1 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 outline-none ring-teal-500/20 transition focus:border-teal-300 focus:ring-4"
+                      >
+                        <option value="">No category</option>
+                        {categories.map((cat) => (
+                          <option key={cat.id} value={cat.id}>
+                            {cat.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
                   <div className="flex justify-end gap-2">
                     <button
                       onClick={() => setEditingPostId(null)}
@@ -428,6 +560,17 @@ const MiddleSec = () => {
                       <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                         <h3 className="truncate font-black text-slate-950">{getUserName(post.author)}</h3>
                         <span className="text-xs text-slate-400">{new Date(post.createdAt).toLocaleString()}</span>
+                        {/* Category badge */}
+                        {post.category && (
+                          <span
+                            onClick={() => handleCategoryFilter(post.category!.id)}
+                            className="inline-flex cursor-pointer items-center gap-1 rounded-full bg-teal-50 px-2.5 py-0.5 text-xs font-bold text-teal-700 transition hover:bg-teal-100"
+                            title={`Filter by ${post.category.name}`}
+                          >
+                            <TagIcon className="h-3 w-3" />
+                            {post.category.name}
+                          </span>
+                        )}
                       </div>
                       <h4 className="mt-3 text-lg font-black leading-6 text-slate-950">{post.title}</h4>
                       <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-slate-700">{post.content}</p>
@@ -521,5 +664,3 @@ const MiddleSec = () => {
 };
 
 export default MiddleSec;
-
-
