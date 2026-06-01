@@ -9,12 +9,33 @@ export interface PublicUser {
   username?: string;
   email?: string;
   role?: string;
+  bio?: string | null;
+  location?: string | null;
+  avatarUrl?: string | null;
+  createdAt?: string;
   followersCount?: number;
   followingCount?: number;
 }
 
+export interface UpdateProfilePayload {
+  name?: string;
+  bio?: string;
+  location?: string;
+  avatarUrl?: string;
+}
+
 export const getUser = async (userId: UserId): Promise<PublicUser> => {
   const response = await api.get(`/users/${userId}`);
+  return response.data;
+};
+
+export const getMe = async (): Promise<PublicUser> => {
+  const response = await api.get('/users/me');
+  return response.data;
+};
+
+export const updateMe = async (payload: UpdateProfilePayload): Promise<PublicUser> => {
+  const response = await api.patch('/users/me', payload);
   return response.data;
 };
 

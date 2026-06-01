@@ -112,8 +112,6 @@ const MiddleSec = () => {
 
       const response = await fetch(url, {
         method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
       });
 
       if (!response.ok) throw new Error('Failed to fetch posts');
@@ -664,3 +662,4 @@ const MiddleSec = () => {
 };
 
 export default MiddleSec;
+
