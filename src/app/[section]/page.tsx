@@ -1,5 +1,6 @@
 import AppShell from '@/components/AppShell';
 import EmptySection from '@/components/EmptySection';
+import NotificationsPage from '@/components/NotificationsPage';
 
 const allowedSections = new Set([
   'explore',
@@ -20,7 +21,11 @@ export default async function SectionPage({
 
   return (
     <AppShell>
-      <EmptySection section={section} />
+      {section === 'notifications' ? (
+        <NotificationsPage />
+      ) : (
+        <EmptySection section={section} />
+      )}
     </AppShell>
   );
 }
