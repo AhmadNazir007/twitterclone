@@ -2,11 +2,13 @@
 
 import { useEffect, useMemo, useState, type ChangeEvent } from 'react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import {
   CalendarDaysIcon,
   ChatBubbleLeftIcon,
+  ChatBubbleLeftRightIcon,
   CheckIcon,
   HeartIcon,
   MapPinIcon,
@@ -51,6 +53,7 @@ const formatJoinedDate = (createdAt?: string) => {
 };
 
 const Profile = ({ profileUserId }: { profileUserId?: UserId }) => {
+  const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
   const { token, user: currentUser } = useSelector((state: RootState) => state.auth);
   const [ownProfile, setOwnProfile] = useState<PublicUser | null>(currentUser);
@@ -254,7 +257,16 @@ const Profile = ({ profileUserId }: { profileUserId?: UserId }) => {
                   Edit
                 </button>
               ) : (
-                <FollowButton targetUserId={profileUserId} />
+                <>
+                  <button
+                    onClick={() => router.push(`/messages?userId=${getId(displayUser)}`)}
+                    className="flex h-10 items-center gap-2 rounded-full border border-slate-300 px-4 text-sm font-bold text-slate-800 transition hover:border-teal-300 hover:bg-teal-50 hover:text-teal-700"
+                  >
+                    <ChatBubbleLeftRightIcon className="h-5 w-5" />
+                    Message
+                  </button>
+                  <FollowButton targetUserId={profileUserId} />
+                </>
               )}
             </div>
           </div>

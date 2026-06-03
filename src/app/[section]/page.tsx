@@ -1,6 +1,8 @@
+import { Suspense } from 'react';
 import AppShell from '@/components/AppShell';
 import EmptySection from '@/components/EmptySection';
 import NotificationsPage from '@/components/NotificationsPage';
+import MessagesPage from '@/components/Messages/MessagesPage';
 
 const allowedSections = new Set([
   'explore',
@@ -23,6 +25,14 @@ export default async function SectionPage({
     <AppShell>
       {section === 'notifications' ? (
         <NotificationsPage />
+      ) : section === 'messages' ? (
+        <Suspense fallback={
+          <div className="flex h-[70vh] items-center justify-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-500"></div>
+          </div>
+        }>
+          <MessagesPage />
+        </Suspense>
       ) : (
         <EmptySection section={section} />
       )}
